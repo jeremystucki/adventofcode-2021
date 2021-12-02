@@ -48,10 +48,12 @@ fn part_2() {
     println!("{}", final_count);
 }
 
+// I wanted to extract the fold thingy, but it got a bit ugly
+//
 // trait IncraseCounter<U> {
 //     fn count_increases(self, start_value: U) -> i32;
 // }
-
+//
 // impl<T, U> IncraseCounter<U> for T where T: Iterator<Item=U>, U: Ord {
 //     fn count_increases(self, start_value: U) -> i32 {
 //         self.fold((-1, start_value), |(count, last_value), new_value| {
