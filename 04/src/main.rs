@@ -55,6 +55,7 @@ impl BingoCard {
 
 fn main() {
     part_1();
+    part_2();
 }
 
 fn part_1() {
@@ -102,16 +103,83 @@ fn part_1() {
             .iter_mut()
             .for_each(|card| card.tick_number(*drawn_number));
 
-        if let Some((winner_position, winner)) = bingo_cards
+        if let Some(winner) = bingo_cards
+            .iter()
+            .filter(|card| card.check_win_condition())
+            .next()
+        {
+            break (winner.sum_of_unchecked_fields(), drawn_number);
+        }
+    };
+
+    println!("{:?}", winner * last_drawn_number);
+}
+
+fn part_2() {
+    let file = File::open("input").unwrap();
+
+    let mut reader = BufReader::new(file)
+        .lines()
+        .map(Result::unwrap)
+        .filter(|line| !line.is_empty());
+
+    let drawn_numbers = reader
+        .next()
+        .unwrap()
+        .split(',')
+        .map(|number| number.parse::<u32>())
+        .map(Result::unwrap)
+        .collect::<Vec<_>>();
+
+    let mut bingo_cards = reader
+        .chunks(5)
+        .into_iter()
+        .map(|chunk| {
+            let mut numbers = [0u32; 5 * 5];
+
+            chunk
+                .collect::<Vec<_>>()
+                .iter()
+                .map(|number| number.as_str().split_whitespace().collect::<Vec<_>>())
+                .flatten()
+                .map(|number| number.parse::<u32>())
+                .map(Result::unwrap)
+                .enumerate()
+                .for_each(|(index, number)| numbers[index] = number);
+
+            BingoCard::new(numbers)
+        })
+        .collect::<Vec<_>>();
+
+    let mut numbers_to_draw = drawn_numbers.iter();
+
+    let (winner, last_drawn_number) = loop {
+        let drawn_number = numbers_to_draw.next().unwrap();
+
+        bingo_cards
+            .iter_mut()
+            .for_each(|card| card.tick_number(*drawn_number));
+
+        let winner_indices = bingo_cards
             .iter()
             .enumerate()
             .filter(|(_, card)| card.check_win_condition())
-            .next()
-        {
-            if bingo_cards.len() == 1 {
-                break (winner.sum_of_unchecked_fields(), drawn_number);
-            } else {
-                bingo_cards.remove(winner_position);
+            .map(|(index, _)| index)
+            .rev()
+            .collect::<Vec<_>>();
+
+        if winner_indices.is_empty() {
+            continue;
+        }
+
+        if bingo_cards.len() == 1 {
+            break (
+                bingo_cards[winner_indices[0]].sum_of_unchecked_fields(),
+                drawn_number,
+            );
+        } else {
+            for winner in winner_indices {
+                bingo_cards.remove(winner);
             }
         }
     };
