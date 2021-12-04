@@ -30,7 +30,7 @@ fn part_1() {
         })
         .enumerate()
         .filter(|(_, count)| *count > total_count / 2)
-        .map(|(index, _)| 2u32.pow((code_width - index - 1) as u32))
+        .map(|(index, _)| 2u32.pow((code_width - 1 - index).try_into().unwrap()))
         .sum();
 
     let epsilon = 2u32.pow(code_width as u32) - 1 - gamma;
