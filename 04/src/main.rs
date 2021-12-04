@@ -31,20 +31,17 @@ impl BingoCard {
             .map(|position| self.fields[position].ticked = true);
     }
 
-    fn check_win_condition(&self) -> Option<u32> {
-        if (0..5).any(|row| self.check_win_condition_for_row(row))
+    fn check_win_condition(&self) -> bool {
+        (0..5).any(|row| self.check_win_condition_for_row(row))
             || (0..5).any(|column| self.check_win_condition_for_column(column))
-        {
-            Some(
-                self.fields
-                    .iter()
-                    .filter(|field| !field.ticked)
-                    .map(|field| field.value)
-                    .sum(),
-            )
-        } else {
-            None
-        }
+    }
+
+    fn sum_of_unchecked_fields(&self) -> u32 {
+        self.fields
+            .iter()
+            .filter(|field| !field.ticked)
+            .map(|field| field.value)
+            .sum()
     }
 
     fn check_win_condition_for_row(&self, row: usize) -> bool {
@@ -105,14 +102,17 @@ fn part_1() {
             .iter_mut()
             .for_each(|card| card.tick_number(*drawn_number));
 
-        if let Some(winner) = bingo_cards
+        if let Some((winner_position, winner)) = bingo_cards
             .iter()
-            .map(BingoCard::check_win_condition)
-            .filter(Option::is_some)
-            .map(Option::unwrap)
+            .enumerate()
+            .filter(|(_, card)| card.check_win_condition())
             .next()
         {
-            break (winner, drawn_number);
+            if bingo_cards.len() == 1 {
+                break (winner.sum_of_unchecked_fields(), drawn_number);
+            } else {
+                bingo_cards.remove(winner_position);
+            }
         }
     };
 
