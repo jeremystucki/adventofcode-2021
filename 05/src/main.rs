@@ -78,15 +78,15 @@ fn part_2() {
                 .map(|(start, end)| (start.parse().unwrap(), end.parse().unwrap()))
         })
         .map(Option::unwrap)
-        .flat_map(|(mut start, mut end): (Point, Point)| {
+        .flat_map(|(mut start, mut end): (Point, Point)| -> Vec<_> {
             if start.x == end.x {
                 (min(start.y, end.y)..=max(start.y, end.y))
                     .map(|y| Point { x: start.x, y })
-                    .collect::<Vec<_>>()
+                    .collect()
             } else if start.y == end.y {
                 (min(start.x, end.x)..=max(start.x, end.x))
                     .map(|x| Point { x, y: start.y })
-                    .collect::<Vec<_>>()
+                    .collect()
             } else {
                 if start.x > end.x {
                     mem::swap(&mut start, &mut end);
@@ -98,14 +98,14 @@ fn part_2() {
                             x: start.x + offset as u32,
                             y: start.y + offset as u32,
                         })
-                        .collect::<Vec<_>>()
+                        .collect()
                 } else {
                     (0..=(end.x - start.x))
                         .map(|offset| Point {
                             x: start.x + offset as u32,
                             y: start.y - offset as u32,
                         })
-                        .collect::<Vec<_>>()
+                        .collect()
                 }
             }
         })
