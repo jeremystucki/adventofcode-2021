@@ -51,12 +51,7 @@ fn part_2() {
 
     for current_day in 0..256 {
         let relative_day = current_day % 9;
-
-        let amount = counts[relative_day];
-        counts[relative_day as usize] = 0;
-
-        counts[(relative_day + 7) % 9] += amount;
-        counts[(relative_day + 9) % 9] += amount;
+        counts[(relative_day + 7) % 9] += counts[relative_day];
     }
 
     println!("{}", counts.iter().sum::<u128>());
