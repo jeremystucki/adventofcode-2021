@@ -38,6 +38,10 @@ name = "adventofcode-2021-08"
 version = "0.1.0"
 
 [[package]]
+name = "adventofcode-2021-09"
+version = "0.1.0"
+
+[[package]]
 name = "either"
 version = "1.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
