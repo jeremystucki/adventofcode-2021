@@ -36,7 +36,7 @@ fn part_1() {
     let (final_horizontal, final_depth) = BufReader::new(file)
         .lines()
         .map(Result::unwrap)
-        .map(|line| line.parse::<Movement>())
+        .map(|line| line.parse())
         .map(Result::unwrap)
         .fold((0, 0), |(horizontal, depth), movement| match movement {
             Movement::Forward(amount) => (horizontal + amount, depth),
@@ -53,7 +53,7 @@ fn part_2() {
     let (final_horizontal, final_depth, _) = BufReader::new(file)
         .lines()
         .map(Result::unwrap)
-        .map(|line| line.parse::<Movement>())
+        .map(|line| line.parse())
         .map(Result::unwrap)
         .fold(
             (0, 0, 0),

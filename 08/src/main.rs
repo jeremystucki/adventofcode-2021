@@ -135,7 +135,7 @@ fn figure_out_digits(mut input_digits: Vec<HashSet<char>>) -> Vec<HashSet<char>>
 
     position = input_digits
         .iter()
-        .position(|x| x.len() == 5 && x.difference(&four).count() == 2)
+        .position(|x| x.len() == 5 && (x - &four).len() == 2)
         .unwrap();
     let five = input_digits.remove(position);
 

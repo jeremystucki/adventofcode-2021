@@ -49,7 +49,8 @@ fn part_2() {
         .next()
         .unwrap()
         .split(',')
-        .map(|number| number.parse::<u32>().unwrap())
+        .map(|number| number.parse::<u32>())
+        .map(Result::unwrap)
         .collect::<Vec<_>>();
 
     numbers.sort();
