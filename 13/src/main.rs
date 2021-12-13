@@ -3,12 +3,6 @@ use std::fs::File;
 use std::io::BufRead;
 use std::io::BufReader;
 
-#[derive(Debug, PartialEq, Eq, Ord, PartialOrd)]
-struct Point {
-    x: u32,
-    y: u32,
-}
-
 #[derive(Debug)]
 enum FoldDirection {
     X,
@@ -23,10 +17,8 @@ fn main() {
     let mut points = file_reader
         .by_ref()
         .map_while(|line| {
-            line.split_once(',').map(|(x, y)| Point {
-                x: x.parse().unwrap(),
-                y: y.parse().unwrap(),
-            })
+            line.split_once(',')
+                .map(|(x, y)| (x.parse::<u32>().unwrap(), y.parse::<u32>().unwrap()))
         })
         .collect::<Vec<_>>();
 
@@ -40,8 +32,8 @@ fn main() {
         })
         .collect::<Vec<_>>();
 
-    let mut width = points.iter().map(|point| point.x).max().unwrap();
-    let mut height = points.iter().map(|point| point.y).max().unwrap();
+    let mut width = *points.iter().map(|(x, _)| x).max().unwrap();
+    let mut height = *points.iter().map(|(_, y)| y).max().unwrap();
 
     for (index, fold_direction) in fold_directions.into_iter().enumerate() {
         match fold_direction {
@@ -49,22 +41,16 @@ fn main() {
                 width = width / 2;
                 points = points
                     .into_iter()
-                    .filter(|point| point.x != width)
-                    .map(|Point { x, y }| Point {
-                        x: if x < width { x } else { (width * 2) - x },
-                        y,
-                    })
+                    .filter(|(x, _)| *x != width)
+                    .map(|(x, y)| (if x < width { x } else { (width * 2) - x }, y))
                     .collect();
             }
             FoldDirection::Y => {
                 height = height / 2;
                 points = points
                     .into_iter()
-                    .filter(|point| point.y != height)
-                    .map(|Point { x, y }| Point {
-                        x,
-                        y: if y <= height { y } else { (height * 2) - y },
-                    })
+                    .filter(|(_, y)| *y != height)
+                    .map(|(x, y)| (x, if y <= height { y } else { (height * 2) - y }))
                     .collect();
             }
         }
@@ -77,16 +63,13 @@ fn main() {
         }
     }
 
-    let x = points.iter().map(|point| point.x).collect::<Vec<_>>();
-    let y = points
-        .iter()
-        .map(|point| -(point.y as i32))
-        .collect::<Vec<_>>();
+    let (x, y): (Vec<_>, Vec<_>) = points.into_iter().unzip();
 
     python! {
         import matplotlib.pyplot as plt
 
         plt.scatter('x, 'y)
+        plt.gca().invert_yaxis()
         plt.show()
     }
 
@@ -101,7 +84,7 @@ fn main() {
     //             }
     //         );
     //     }
-
+    //
     //     print!("\n");
     // }
 }
